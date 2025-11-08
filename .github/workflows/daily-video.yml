@@ -1,27 +1,39 @@
-name: Daily Religious Video Generator
+name: Daily Religious Video Generator - Multiple Times
 
 on:
   schedule:
-    # كل يوم الساعة 9 صباحاً بتوقيت UTC
-    - cron: '0 9 * * *'
-
-  # يسمح بالتشغيل اليدوي أيضاً
+    # الساعة 6 صباحاً UTC (8 صباحاً btoقيي)
+    - cron: '0 6 * * *'
+    
+    # الساعة 12 ظهراً UTC (2 ظهراً التوقيي)
+    - cron: '0 12 * * *'
+    
+    # الساعة ئ⃎مساءً UTC (8 مساءً التوقيي)
+    - cron: '0 18 * * *'
+    
+    # الساعة تلاليقي 10 مساءً UTC (منتصف الليل بتوقاييي)
+    - cron: '0 22 * * *'
+  
+  # تشغيل يدوي متى ما تبي
   workflow_dispatch:
     inputs:
       video_topic:
-        description: 'موضوع الفيديو (فارغ = AI يختار)'
+        description: 'موضوع الفيديو (فارع = AI يختار)'
         required: false
         default: ''
 
 jobs:
   generate-and-publish-video:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: 🚀 توليد ونشر فيديو ديني
+      - name:  🤖 توليد ونشر فيديو ديني تلقائياً
         run: |
-          echo "🤖 بدء نظام AI الذكي للفيديوهات الدينية..."
-
+          echo "ơ∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞"
+          echo "🚀 بدء نظام AI الذكي للفيدf��وهات الدينظية"
+          echo "⏰ الوقغ: $(date)"
+          echo "∡∡∡∡∡∡∡∡∡∡∡∡∡∡∡∡∡∡∡∡"
+          
           curl -X POST 'https://backend.composio.dev/api/v1/cli/execute-recipe' \
           -H 'Content-Type: application/json' \
           -d '{
@@ -29,15 +41,19 @@ jobs:
             "input": {
               "video_topic": "${{ github.event.inputs.video_topic || '' }}",
               "report_email": "hamzawatfa25@gmail.com",
-              "channel_handle": "@hamzawatfa-c3f"
+              "channel_handle": "@amzawatfa-c3f"
             }
           }'
+          
+          echo ""
+          echo "✅ �م تنفيذ النظام بنجاح!"
+          echo "📧 تفقد بريدك: hamzawatfa25@gmail.com"
+          echo "‡‡‡‡‡‡‡‡‡‡‡‡‡‡‡‡‡‡‡‡"
 
-          echo "✅ تم تنفيذ النظام بنجاح!"
-          echo "📧 تفقد بريدك للتقرير التفصيلي"
-
-      - name: 📊 تسجيل النتيجة
+      - name: 📝 تسجيل النتيجة
         if: always()
         run: |
-          echo "📝 تم تشغيل النظام في: $(date)"
-          echo "🎬 Recipe ID: rcp_GA3Odr3U5NZ-"
+          echo "📅 التاريخ: $(date)"
+          echo "🎋 Recipe ID: rcp_GA3Odr3U5NZ-"
+          echo "📺 القنائ: @hamzawatfa-c3f"
+          echo "✐️ تم بواسطة AI 100%"
