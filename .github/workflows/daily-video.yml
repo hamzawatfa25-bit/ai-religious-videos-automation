@@ -1,0 +1,43 @@
+name: Daily Religious Video Generator
+
+on:
+  schedule:
+    # كل يوم الساعة 9 صباحاً بتوقيت UTC
+    - cron: '0 9 * * *'
+
+  # يسمح بالتشغيل اليدوي أيضاً
+  workflow_dispatch:
+    inputs:
+      video_topic:
+        description: 'موضوع الفيديو (فارغ = AI يختار)'
+        required: false
+        default: ''
+
+jobs:
+  generate-and-publish-video:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🚀 توليد ونشر فيديو ديني
+        run: |
+          echo "🤖 بدء نظام AI الذكي للفيديوهات الدينية..."
+
+          curl -X POST 'https://backend.composio.dev/api/v1/cli/execute-recipe' \
+          -H 'Content-Type: application/json' \
+          -d '{
+            "recipeId": "rcp_GA3Odr3U5NZ-",
+            "input": {
+              "video_topic": "${{ github.event.inputs.video_topic || '' }}",
+              "report_email": "hamzawatfa25@gmail.com",
+              "channel_handle": "@hamzawatfa-c3f"
+            }
+          }'
+
+          echo "✅ تم تنفيذ النظام بنجاح!"
+          echo "📧 تفقد بريدك للتقرير التفصيلي"
+
+      - name: 📊 تسجيل النتيجة
+        if: always()
+        run: |
+          echo "📝 تم تشغيل النظام في: $(date)"
+          echo "🎬 Recipe ID: rcp_GA3Odr3U5NZ-"
