@@ -1,0 +1,78 @@
+name: 🚀 AI Islamic Content Generator - Every 2 Hours
+
+on:
+  schedule:
+    # Runs every 2 hours (12 times daily)
+    - cron: '0 */2 * * *'
+  workflow_dispatch:  # Allow manual trigger
+    inputs:
+      test_mode:
+        description: 'Run in test mode (no actual posting)'
+        required: false
+        type: boolean
+        default: false
+
+env:
+  COMPOSIO_API_KEY: ${{ secrets.COMPOSIO_API_KEY }}
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  generate-and-post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: 📦 Install Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install composio-core composio-openai requests python-dotenv
+
+      - name: 🔍 Search Latest News
+        id: news_search
+        run: python scripts/search_news.py
+        env:
+          TEST_MODE: ${{ inputs.test_mode || 'false' }}
+
+      - name: 🧠 Generate Content Script
+        id: generate_script
+        run: python scripts/generate_script.py
+        env:
+          NEWS_DATA: ${{ steps.news_search.outputs.news_json }}
+
+      - name: 🎬 Generate Video with Veo 3
+        id: generate_video
+        run: python scripts/generate_video.py
+        env:
+          SCRIPT_DATA: ${{ steps.generate_script.outputs.script_json }}
+
+      - name: 🖼️ Generate Thumbnail
+        id: generate_thumbnail
+        run: python scripts/generate_thumbnail.py
+        env:
+          SCRIPT_DATA: ${{ steps.generate_script.outputs.script_json }}
+
+      - name: 📧 Send Email Notification
+        if: success()
+        run: python scripts/send_notification.py
+        env:
+          VIDEO_URL: ${{ steps.generate_video.outputs.video_url }}
+          THUMBNAIL_URL: ${{ steps.generate_thumbnail.outputs.thumbnail_url }}
+          SCRIPT_DATA: ${{ steps.generate_script.outputs.script_json }}
+          TEST_MODE: ${{ inputs.test_mode || 'false' }}
+
+      - name: 📊 Log Execution
+        if: always()
+        run: python scripts/log_execution.py
+        env:
+          STATUS: ${{ job.status }}
+          NEWS_DATA: ${{ steps.news_search.outputs.news_json }}
+          SCRIPT_DATA: ${{ steps.generate_script.outputs.script_json }}
